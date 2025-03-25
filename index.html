@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor CSV Profesional</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <h1>Gestor de Datos CSV</h1>
+</header>
+
+<div class="container">
+    <div class="file-input">
+        <button onclick="document.getElementById('csvFile').click()">Seleccionar archivo CSV</button>
+        <input type="file" id="csvFile" accept=".csv">
+    </div>
+
+    <div class="export-container">
+        <select id="exportSelect" class="select-input">
+            <option value="csv">Exportar como CSV</option>
+            <option value="json">Exportar como JSON</option>
+            <option value="excel">Exportar como Excel</option>
+        </select>
+        <button onclick="exportar()">Exportar</button>
+    </div>
+
+    <div class="filter-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar datos...">
+    </div>
+
+    <!-- Información adicional sobre hacer clic en filas -->
+    <div class="info-message">
+        <p>Haz clic en una fila de la tabla para ver más detalles debajo.</p>
+    </div>
+
+    <div class="table-container">
+        <table id="tablaPersonas">
+            <thead>
+                <tr id="tableHeader"></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Detail Box -->
+    <div class="detail-box" id="detailBox"></div>
+</div>
+
+<footer>
+    <p>&copy; 2023 FundaEsplai. Todos los derechos reservados.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
