@@ -1,3 +1,5 @@
+
+/* Manejo de carga del archivo CSV */
 document.getElementById('csvFile').addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (file) {
@@ -8,15 +10,16 @@ document.getElementById('csvFile').addEventListener('change', function(event) {
                 const headers = results.meta.fields;
                 allData = results.data;
                 createTable(headers, allData);
+                displayAllResponsesSummary(headers);
             }
         });
     }
 });
 
 let allData = [];
-const charLimit = 50; // Set character limit for showing the "Show More" button
+const charLimit = 50; // Límite de caracteres para el botón "Show More"
 
-// Crear tabla
+// Función para crear tabla HTML a partir de los datos
 function createTable(headers, data) {
     const thead = document.getElementById('tableHeader');
     const tbody = document.querySelector('#tablaPersonas tbody');
@@ -31,7 +34,7 @@ function createTable(headers, data) {
 
     data.forEach(row => {
         const tr = document.createElement('tr');
-        tr.addEventListener('click', () => showDetails(row)); // Add click event to show details
+        tr.addEventListener('click', () => showDetails(row)); // Agregar evento para mostrar detalles
 
         headers.forEach(header => {
             const td = document.createElement('td');
@@ -43,7 +46,7 @@ function createTable(headers, data) {
                 button.textContent = 'Show More';
                 button.className = 'show-more-button';
                 button.onclick = (e) => {
-                    e.stopPropagation(); // Prevent row click event
+                    e.stopPropagation(); // Prevenir el evento de click en la fila
                     const isExpanded = td.classList.toggle('expanded');
                     span.textContent = isExpanded ? text : text.substring(0, charLimit) + '...';
                     button.textContent = isExpanded ? 'Show Less' : 'Show More';
@@ -74,7 +77,60 @@ function createTable(headers, data) {
     });
 }
 
-// Exportar datos
+// Función para mostrar el resumen de respuestas en todas las columnas
+function displayAllResponsesSummary(headers) {
+    const summaryDiv = document.getElementById('responseSummary');
+    let html = '<h3>Resumen de respuestas por columna</h3>';
+    
+    headers.forEach(header => {
+        let totalRespuestas = 0;
+        const distribucion = {};
+
+        allData.forEach(row => {
+            const cell = row[header] ? row[header].trim() : '';
+            if (cell !== '') {
+                totalRespuestas++;
+                distribucion[cell] = (distribucion[cell] || 0) + 1;
+            }
+        });
+
+        // Ordenar la distribución de respuestas de manera descendente
+        const sortedDistribucion = Object.entries(distribucion)
+            .sort((a, b) => b[1] - a[1]);
+
+        html += `<div style="margin-bottom:15px; border:1px solid #ddd; padding:10px; border-radius:5px;">`;
+        // Encabezado con evento onclick para alternar los detalles
+        html += `<div class="column-summary-header" style="cursor:pointer;" onclick="toggleColumnDetails(this)">`;
+        html += `<strong>${header}</strong>: ${totalRespuestas} respuesta${totalRespuestas !== 1 ? 's' : ''}`;
+        html += `</div>`;
+        // Contenido de detalles inicialmente oculto
+        html += `<div class="column-details" style="display:none; margin-top:8px;">`;
+        if (totalRespuestas > 0) {
+            html += `<ul>`;
+            sortedDistribucion.forEach(([value, count]) => {
+                html += `<li>${count} de "${value}"</li>`;
+            });
+            html += `</ul>`;
+        }
+        html += `</div>`;
+        html += `</div>`;
+    });
+    
+    summaryDiv.innerHTML = html;
+}
+
+// Función para alternar la visualización de los detalles de una columna
+function toggleColumnDetails(element) {
+    // Se asume que el siguiente hermano es el contenedor de detalles
+    const details = element.nextElementSibling;
+    if (details.style.display === "none") {
+        details.style.display = "block";
+    } else {
+        details.style.display = "none";
+    }
+}
+
+// Función para exportar datos
 function exportar() {
     const format = document.getElementById('exportSelect').value;
     if (format === 'csv') {
